@@ -1,6 +1,6 @@
-# Number Validation App
+# Whatsapp Validation App
 
-This application allows users to validate a list of phone numbers via an external API from <a href="https://pushwa.com/">PushWa.com</a>. It provides real-time feedback to users, indicating whether each number is valid or invalid, and also includes a progress indicator. The application is built using **Node.js**, **Express**, and **Socket.IO**, with a **Bootstrap** front-end.
+This application allows users to validate a list of phone numbers is registered on whatsapp via an external API from <a href="https://pushwa.com/">PushWa.com</a>. It provides real-time feedback to users, indicating whether each number is valid or invalid, and also includes a progress indicator. The application is built using **Node.js**, **Express**, and **Socket.IO**, with a **Bootstrap** front-end.
 
 ## Features
 
