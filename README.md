@@ -32,7 +32,15 @@ cd whatsapp-validation
 npm install
 ```
 
-### 3. Start  the server:
+### 3. Setup your token
+- Connect your device to Pushwa.com
+- Copy your token
+- Save your token in .env
+``` bash
+PUSHWA_TOKEN="xxxx"
+```
+
+### 4. Start  the server:
 
 ``` bash
 npm start
