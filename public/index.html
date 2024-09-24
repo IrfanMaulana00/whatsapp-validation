@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validate Numbers</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin-top: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Whatsapp Validation</h1>
+        <center><b><h3>Progress : </h3><div id="progressTotal" class="text-muted">0/0</div></b></center>
+        <div class="row">
+            <!-- List Nomor -->
+            <div class="col-md-4">
+                <h3>List Nomor</h3>
+                <textarea id="listNumbers" rows="15" class="form-control" placeholder="Enter numbers, one per line"></textarea>
+            </div>
+
+            <!-- Result Valid -->
+            <div class="col-md-4">
+                <h3>Result Valid</h3>
+                <textarea id="validNumbers" rows="15" class="form-control" readonly></textarea>
+                <button id="copyValid" class="btn btn-success mt-2">Copy Valid</button>
+            </div>
+
+            <!-- Result Invalid -->
+            <div class="col-md-4">
+                <h3>Result Invalid</h3>
+                <textarea id="invalidNumbers" rows="15" class="form-control" readonly></textarea>
+                <button id="copyInvalid" class="btn btn-danger mt-2">Copy Invalid</button>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="row mt-4">
+            <div class="col text-center">
+                <button id="submitBtn" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Socket.io -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
+
+    <script>
+        const socket = io();
+
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            const listNumbers = document.getElementById('listNumbers').value.split('\n').map(num => num.trim()).filter(Boolean);
+
+            // Clear previous results
+            document.getElementById('validNumbers').value = '';
+            document.getElementById('invalidNumbers').value = '';
+
+            // Emit the list of numbers for validation
+            socket.emit('validateNumbers', listNumbers);
+        });
+
+        // Listen for each validation result and update textareas accordingly
+        socket.on('numberValidated', (data) => {
+            if (data.status === 'valid') {
+                document.getElementById('validNumbers').value += data.number + '\n';
+            } else {
+                document.getElementById('invalidNumbers').value += data.number + '\n';
+            }
+            updateProgress()
+        });
+        
+        function updateProgress() {
+            const validCount = document.getElementById('validNumbers').value.split('\n').filter(Boolean).length;
+            const invalidCount = document.getElementById('invalidNumbers').value.split('\n').filter(Boolean).length;
+            const totalCount = validCount + invalidCount;
+
+            document.getElementById('progressTotal').textContent = `${totalCount}/${document.getElementById('listNumbers').value.split('\n').length}`;
+        }
+
+        // Function to copy text to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    alert('Copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        }
+
+        // Copy valid numbers
+        document.getElementById('copyValid').addEventListener('click', () => {
+            const validText = document.getElementById('validNumbers').value;
+            copyToClipboard(validText);
+        });
+
+        // Copy invalid numbers
+        document.getElementById('copyInvalid').addEventListener('click', () => {
+            const invalidText = document.getElementById('invalidNumbers').value;
+            copyToClipboard(invalidText);
+        });
+    </script>
+</body>
+</html>
