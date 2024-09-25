@@ -14,8 +14,8 @@ app.use(express.static('public'));
 io.on('connection', (socket) => {
     console.log('New client connected');
 
-    socket.on('validateNumbers', (numbers) => {
-        numbers.forEach(async (number) => {
+    socket.on('validateNumbers', async (numbers) => {
+        for (let number of numbers) {
             // Remove all symbols (retain only digits)
             number = number.replace(/\D/g, '');
             try {
@@ -24,17 +24,21 @@ io.on('connection', (socket) => {
                     "number" : number
                 });
                 console.log(`result : ${number} ${response.data.isvalid}`);
-                // Jika status true, push ke validNumbers
-                if (response.data.isvalid) {
-                    socket.emit('numberValidated', { number, status: 'valid' });
+                if (response.data.status){
+                    if (response.data.isvalid) {
+                        socket.emit('numberValidated', { number, status: 'valid' });
+                    } else {
+                        socket.emit('numberValidated', { number, status: 'invalid' });
+                    }
                 } else {
-                    socket.emit('numberValidated', { number, status: 'invalid' });
+                    socket.emit('error', { msg: response.data.message });
+                    break;
                 }
             } catch (error) {
                 // Jika terjadi error, anggap nomor invalid
                 socket.emit('numberValidated', { number, status: 'invalid' });
             }
-        });
+        };
     });
 
     socket.on('disconnect', () => {

@@ -83,6 +83,10 @@
             updateProgress()
         });
         
+        socket.on('error', (data) => {
+            alert(data.msg);
+        });
+        
         function updateProgress() {
             const validCount = document.getElementById('validNumbers').value.split('\n').filter(Boolean).length;
             const invalidCount = document.getElementById('invalidNumbers').value.split('\n').filter(Boolean).length;
